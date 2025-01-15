@@ -4,4 +4,11 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "requests-html>=0.10.0",
+    "requests>=2.32.3",
+    "selenium>=4.27.1",
+    "flask>=3.1.0",
+    "flask-socketio>=5.5.1",
+]
