@@ -56,33 +56,45 @@ def reset_storage():
 def send_to_discord(item_name, coins_per_hour, max_profit, image_url):
     """Send an embedded message to Discord and update sent_items."""
     global sent_items
-    embed = {
-        "content": "<@715223773120430191> get flippin nih",
-        "embeds": [
-            {
-                "title": f"{item_name}",
-                "color": 0x00FF00,
-                "thumbnail": {"url": image_url},
-                "fields": [
-                    {"name": "Coins per Hour", "value": f"{coins_per_hour:,} coins", "inline": True},
-                    {"name": "Max Profit", "value": f"{max_profit:,} coins", "inline": True}
-                ]
-            }
-        ]
-    }
-    response = requests.post(WEBHOOK_URL, json=embed)
-    if response.status_code != 204:
-        print(f"Failed to send message to Discord: {response.status_code} {response.text}")
-        return
+    try:
+        print(f"Preparing to send webhook for {item_name} to Discord...")
+        embed = {
+            "content": "<@715223773120430191> get flippin nih",
+            "embeds": [
+                {
+                    "title": f"{item_name}",
+                    "color": 0x00FF00,
+                    "thumbnail": {"url": image_url},
+                    "fields": [
+                        {"name": "Coins per Hour", "value": f"{coins_per_hour:,} coins", "inline": True},
+                        {"name": "Max Profit", "value": f"{max_profit:,} coins", "inline": True}
+                    ]
+                }
+            ]
+        }
+        print(f"Webhook payload: {embed}")
 
-    # Add item to sent_items and emit update
-    item_key = f"{item_name}-{image_url}"
-    sent_items[item_key] = {
-        "coins_per_hour": coins_per_hour,
-        "max_profit": max_profit,
-        "timestamp": datetime.now()
-    }
-    emit_sent_items()
+        # Send the webhook request
+        response = requests.post(WEBHOOK_URL, json=embed)
+        print(f"Webhook response: {response.status_code}, {response.text}")
+
+        if response.status_code != 204:
+            print(f"Failed to send message to Discord: {response.status_code} {response.text}")
+            return
+
+        # Add item to sent_items and emit update
+        item_key = f"{item_name}-{image_url}"
+        sent_items[item_key] = {
+            "coins_per_hour": coins_per_hour,
+            "max_profit": max_profit,
+            "timestamp": datetime.now()
+        }
+        print(f"Successfully sent webhook for {item_name}. Updating sent items...")
+        emit_sent_items()
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending webhook: {e}")
+    except Exception as e:
+        print(f"Unexpected error in send_to_discord: {e}")
 
 def real_time_scraper():
     """Scrape data and send updates for items that pass filters."""
