@@ -226,4 +226,4 @@ if __name__ == "__main__":
     reset_thread.start()
 
     print("Starting WebSocket server...")
-    socketio.run(app, host='0.0.0.0', port=8080, use_reloader=False, log_output=True)
+    socketio.run(app, host='0.0.0.0', port=8080, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
